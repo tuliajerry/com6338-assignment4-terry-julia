@@ -13,75 +13,115 @@ var words = [
 ];
 
 
-var wins = 0;
-var losses = 0;
-var remainingGuesses = 10;
-var guessedLetters = [];
-var currentWord = null;
-var previousWord = null;
+describe("Word Guess Game", function () {
+  beforeEach(function () {
+    initializeGame();
+  });
 
+  it("Should count 'b' as a correct guess", function () {
+    guessLetter("b");
+    expect(wordToGuess.textContent).to.equal("b______");
+  });
 
-function initializeGame() {
-    currentWord = words[Math.floor(Math.random() * words.length)]; 
-    guessedLetters = [];
-    remainingGuesses = 10;
-}
+  it("Should count 'i' as an incorrect guess", function () {
+    guessLetter("i");
+    expect(wordToGuess.textContent).to.equal("_______");
+  });
 
-
-function updateDisplay() {
-    document.getElementById('word-to-guess').textContent = currentWord
-        .split('')
-        .map(letter => guessedLetters.includes(letter) ? letter : '_')
-        .join('');
-    document.getElementById('previous-word').textContent = previousWord;
-    document.getElementById('incorrect-letters').textContent = guessedLetters.filter(letter => !currentWord.includes(letter)).join(', ');
-    document.getElementById('remaining-guesses').textContent = remainingGuesses;
-    document.getElementById('wins').textContent = wins;
-    document.getElementById('losses').textContent = losses;
-}
-
-
-function handleGuess(letter) {
-    if (currentWord === null) {
-        initializeGame();
-    }
-
+  it("Solving the word should increase wins and reset the game with the next word", function () {
+   
+    guessWord("bananas");
     
-    if (guessedLetters.includes(letter)) {
-        return; 
-    }
-
-   
-    guessedLetters.push(letter);
-
+    solveWord();
     
-    if (!currentWord.includes(letter)) {
-        remainingGuesses--;
-    }
+    expect(parseInt(wins.textContent)).to.equal(1);
+    
+    expect(wordToGuess.textContent).to.equal("javascript");
+  });
 
+  it("Playing against the word 'javascript' and winning should display previous word 'bananas'", function () {
    
-    if (currentWord.split('').every(letter => guessedLetters.includes(letter)) && remainingGuesses > 0) {
-        wins++; 
-        previousWord = currentWord;
-        initializeGame();
-    } else if (remainingGuesses === 0) {
-        losses++; 
-        previousWord = currentWord;
-        initializeGame();
-    }
-
+    guessWord("bananas");
+    
+    solveWord();
    
-    updateDisplay();
-}
+    guessWord("javascript");
+   
+    expect(previousWord.textContent).to.equal("bananas");
+  });
 
+  it("Should count 3 incorrect guesses", function () {
+   
+    guessWord("javascript");
+   
+    guessLetter("x");
+    guessLetter("y");
+    guessLetter("z");
+   
+    expect(remainingGuesses.textContent).to.equal("7");
+  });
 
-initializeGame(); 
-updateDisplay(); 
+  it("Should count 3 correct guesses", function () {
+    
+    guessWord("javascript");
+   
+    guessLetter("j");
+    guessLetter("a");
+    guessLetter("v");
+   
+    expect(wordToGuess.textContent).to.equal("jav___r__");
+  });
 
-document.addEventListener('keydown', function(event) {
-    var keyCode = event.keyCode;
-    if (keyCode >= 65 && keyCode <= 90) {
-        var letter = String.fromCharCode(keyCode).toLowerCase();
-        handleGuess(letter);
+  it("Solving the word should increase wins and reset the game with the next word", function () {
+    
+    guessWord("javascript");
+    
+    solveWord();
+    
+    expect(parseInt(wins.textContent)).to.equal(1);
+    
+    expect(wordToGuess.textContent).to.equal("java______");
+  });
+
+  it("Playing against the word 'mango' and losing should display previous word 'javascript'", function () {
+    
+    guessWord("javascript");
+   
+    for (let i = 0; i < 10; i++) {
+      guessLetter("x");
     }
+   
+    guessWord("mango");
+   
+    expect(previousWord.textContent).to.equal("javascript");
+  });
+
+  it("Should count 3 incorrect guesses", function () {
+   
+    guessWord("mango");
+    
+    guessLetter("x");
+    guessLetter("y");
+    guessLetter("z");
+   
+    expect(remainingGuesses.textContent).to.equal("7");
+  });
+
+  it("Should count a mix of 4 correct and 7 incorrect guesses correctly", function () {
+    
+    guessWord("mango");
+   
+    guessLetter("m");
+    guessLetter("a");
+    guessLetter("n");
+    guessLetter("g");
+    guessLetter("x");
+    guessLetter("y");
+    guessLetter("z");
+    guessLetter("o");
+    guessLetter("p");
+   
+    expect(remainingGuesses.textContent).to.equal("3");
+  });
 });
+
