@@ -21,7 +21,7 @@ var currentWord = null;
 
 
 function initializeGame() {
-    currentWord = words[Math.floor(Math.random() * words.length)];
+    currentWord = words[Math.floor(Math.random() * words.length)]; 
     guessedLetters = [];
     remainingGuesses = 10;
 }
@@ -41,16 +41,17 @@ function updateDisplay() {
 
 
 function handleGuess(letter) {
+   
     if (currentWord === null) {
         initializeGame();
     }
 
-    
+   
     if (guessedLetters.includes(letter)) {
-        return;
+        return; 
     }
 
-
+    
     guessedLetters.push(letter);
 
    
@@ -63,21 +64,21 @@ function handleGuess(letter) {
         wins++; 
         initializeGame();
     } else if (remainingGuesses === 0) {
-        losses++;
+        losses++; 
         initializeGame();
     }
 
-   
+    
     updateDisplay();
 }
 
 
-updateDisplay();
+initializeGame(); 
+updateDisplay(); 
 
 
 document.addEventListener('keydown', function(event) {
     var keyCode = event.keyCode;
-   
     if (keyCode >= 65 && keyCode <= 90) {
         var letter = String.fromCharCode(keyCode).toLowerCase();
         handleGuess(letter);
