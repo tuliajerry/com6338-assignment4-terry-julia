@@ -18,6 +18,7 @@ var losses = 0;
 var remainingGuesses = 10;
 var guessedLetters = [];
 var currentWord = null;
+var previousWord = null;
 
 
 function initializeGame() {
@@ -32,7 +33,7 @@ function updateDisplay() {
         .split('')
         .map(letter => guessedLetters.includes(letter) ? letter : '_')
         .join('');
-    document.getElementById('previous-word').textContent = wins > 0 || losses > 0 ? currentWord : '';
+    document.getElementById('previous-word').textContent = previousWord;
     document.getElementById('incorrect-letters').textContent = guessedLetters.filter(letter => !currentWord.includes(letter)).join(', ');
     document.getElementById('remaining-guesses').textContent = remainingGuesses;
     document.getElementById('wins').textContent = wins;
@@ -41,41 +42,41 @@ function updateDisplay() {
 
 
 function handleGuess(letter) {
-   
     if (currentWord === null) {
         initializeGame();
     }
 
-   
+    
     if (guessedLetters.includes(letter)) {
         return; 
     }
 
-    
+   
     guessedLetters.push(letter);
 
-   
+    
     if (!currentWord.includes(letter)) {
-        remainingGuesses--; 
+        remainingGuesses--;
     }
 
-    
+   
     if (currentWord.split('').every(letter => guessedLetters.includes(letter)) && remainingGuesses > 0) {
         wins++; 
+        previousWord = currentWord;
         initializeGame();
     } else if (remainingGuesses === 0) {
         losses++; 
+        previousWord = currentWord;
         initializeGame();
     }
 
-    
+   
     updateDisplay();
 }
 
 
 initializeGame(); 
 updateDisplay(); 
-
 
 document.addEventListener('keydown', function(event) {
     var keyCode = event.keyCode;
